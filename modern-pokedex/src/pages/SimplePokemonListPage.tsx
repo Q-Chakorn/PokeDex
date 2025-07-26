@@ -312,7 +312,15 @@ const SimplePokemonListPage: React.FC = () => {
 
                 <div className="flex space-x-1">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    const pageNum = Math.max(1, Math.min(currentPage - 2 + i, totalPages - 4 + i));
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      // If total pages is 5 or less, show all pages
+                      pageNum = i + 1;
+                    } else {
+                      // For more than 5 pages, show 5 pages around current page
+                      const startPage = Math.max(1, Math.min(currentPage - 2, totalPages - 4));
+                      pageNum = startPage + i;
+                    }
                     const isActive = pageNum === currentPage;
                     
                     return (
