@@ -1,0 +1,120 @@
+{
+  "app": {
+    "title": "Modern Pokédex",
+    "subtitle": "Discover and explore Pokémon from the Kanto region"
+  },
+  "navigation": {
+    "home": "Home",
+    "pokemon": "Pokémon",
+    "about": "About"
+  },
+  "search": {
+    "placeholder": "Search Pokémon by name or number...",
+    "clear": "Clear search",
+    "noResults": "No Pokémon found",
+    "noResultsDescription": "Try adjusting your search terms or filters"
+  },
+  "noResults": {
+    "general": "No Pokémon found",
+    "search": "No results for \"{{query}}\"",
+    "filter": "No Pokémon match the selected {{count}} type{{count, plural, one {} other {s}}}",
+    "searchAndFilter": "No results for \"{{query}}\" with {{count}} type{{count, plural, one {} other {s}}} selected",
+    "tryDifferentFilters": "Try adjusting your search terms or filters to find what you're looking for.",
+    "noDataAvailable": "No Pokémon data is currently available.",
+    "clearSearch": "Clear search",
+    "clearFilters": "Clear type filters",
+    "clearAll": "Clear all filters",
+    "suggestions": {
+      "title": "Try these suggestions:",
+      "checkSpelling": "Check your spelling",
+      "tryDifferentKeywords": "Try different or more general keywords",
+      "removeFilters": "Remove some filters to broaden your search",
+      "browseAllPokemon": "Browse all Pokémon without filters"
+    }
+  },
+  "filters": {
+    "title": "Filters",
+    "type": "Type",
+    "clearAll": "Clear all filters",
+    "showAll": "Show all types"
+  },
+  "pokemon": {
+    "number": "No. {{number}}",
+    "height": "Height",
+    "weight": "Weight",
+    "abilities": "Abilities",
+    "stats": "Base Stats",
+    "description": "Description",
+    "types": "Types",
+    "backToList": "Back to Pokémon list"
+  },
+  "stats": {
+    "hp": "HP",
+    "attack": "Attack",
+    "defense": "Defense",
+    "specialAttack": "Sp. Attack",
+    "specialDefense": "Sp. Defense",
+    "speed": "Speed",
+    "total": "Total"
+  },
+  "types": {
+    "normal": "Normal",
+    "fire": "Fire",
+    "water": "Water",
+    "electric": "Electric",
+    "grass": "Grass",
+    "ice": "Ice",
+    "fighting": "Fighting",
+    "poison": "Poison",
+    "ground": "Ground",
+    "flying": "Flying",
+    "psychic": "Psychic",
+    "bug": "Bug",
+    "rock": "Rock",
+    "ghost": "Ghost",
+    "dragon": "Dragon",
+    "dark": "Dark",
+    "steel": "Steel",
+    "fairy": "Fairy"
+  },
+  "units": {
+    "meters": "m",
+    "kilograms": "kg",
+    "centimeters": "cm"
+  },
+  "loading": {
+    "pokemon": "Loading Pokémon...",
+    "details": "Loading details..."
+  },
+  "error": {
+    "general": "Something went wrong",
+    "pokemonNotFound": "Pokémon not found",
+    "loadingFailed": "Failed to load Pokémon data",
+    "tryAgain": "Try again"
+  },
+  "searchError": {
+    "generalTitle": "Search Error",
+    "networkTitle": "Connection Error",
+    "timeoutTitle": "Request Timeout",
+    "generalDescription": "We encountered an error while searching for Pokémon. Please try again.",
+    "networkDescription": "Unable to connect to the server. Please check your internet connection and try again.",
+    "timeoutDescription": "The search request took too long to complete. Please try again.",
+    "retry": "Try Again",
+    "clearFilters": "Clear Filters",
+    "showDetails": "Show error details",
+    "helpText": "If the problem persists, please refresh the page or contact support."
+  },
+  "theme": {
+    "light": "Light mode",
+    "dark": "Dark mode",
+    "toggle": "Toggle theme"
+  },
+  "language": {
+    "english": "English",
+    "thai": "ไทย",
+    "select": "Select language"
+  },
+  "search": {
+    "showing": "Showing {{start}}-{{end}} of {{total}} Pokémon"
+  }
+}

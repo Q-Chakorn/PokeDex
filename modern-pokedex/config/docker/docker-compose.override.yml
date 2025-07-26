@@ -1,0 +1,17 @@
+# Docker Compose override for local development
+# This file is automatically loaded by docker-compose
+version: '3.8'
+
+services:
+  app:
+    # Enable hot reload for development
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    environment:
+      - NODE_ENV=development
+      - VITE_HMR_HOST=0.0.0.0
+      - VITE_HMR_PORT=24678
+    # Enable debugging
+    command: npm run dev -- --host 0.0.0.0 --port 3000
