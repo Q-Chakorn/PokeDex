@@ -259,6 +259,7 @@ const PokemonDetailPage: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.5rem',
+                    backgroundColor: type.color, // Add background color
                     backdropFilter: 'blur(10px)',
                     WebkitBackdropFilter: 'blur(10px)',
                     border: '1px solid rgba(255, 255, 255, 0.2)',
