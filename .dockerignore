@@ -1,0 +1,12 @@
+modern-pokedex/node_modules
+modern-pokedex/dist
+.git
+.gitignore
+.DS_Store
+.vscode
+.idea
+*.swp
+*.swo
+*~
+back-end/node_modules
+back-end/.env
