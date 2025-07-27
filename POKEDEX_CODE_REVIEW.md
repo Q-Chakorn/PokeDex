@@ -12,7 +12,7 @@ Modern Pokédex เป็นเว็บแอปพลิเคชันสำ�
 - **State Management**: React Context + useReducer
 - **Internationalization**: react-i18next (รองรับภาษาไทย/อังกฤษ)
 - **Testing**: Vitest + Playwright (E2E testing)
-- **Containerization**: Docker + Docker Compose
+- **Build System**: Vite + TypeScript
 
 ---
 
@@ -179,24 +179,24 @@ npm run test:e2e:ui # With UI
 
 ---
 
-## 🐳 Docker Setup
+## � Doevelopment Setup
 
 ### **Development Environment**
 ```bash
-./scripts/docker-dev.sh up    # Start dev environment
-./scripts/docker-dev.sh logs  # View logs
-./scripts/docker-dev.sh shell # Access container
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
 ```
 
 ### **Production Build**
 ```bash
-./scripts/docker-build.sh     # Build production image
-docker run -p 80:80 modern-pokedex:latest
+npm run build        # Build production files
+npm run preview      # Serve production build locally
 ```
 
-**Docker Features:**
-- Multi-stage builds (dev/prod)
-- Hot reload ใน development
+**Build Features:**
+- Vite for fast development
+- Hot reload in development
 - Nginx serving ใน production
 - Health checks
 - Volume mounts for development
@@ -238,7 +238,7 @@ docker run -p 80:80 modern-pokedex:latest
 2. **Vite Build**: Bundle optimization
 3. **Asset Processing**: Images, CSS
 4. **Code Splitting**: Vendor/feature chunks
-5. **Docker Image**: Multi-stage production image
+5. **Production Build**: Optimized static files
 
 ### **Build Outputs**
 ```
@@ -324,7 +324,7 @@ Modern Pokédex เป็นโปรเจคที่มีโครงสร�
 - **Architecture**: Clean, maintainable code structure
 - **Performance**: Optimized loading และ rendering
 - **User Experience**: Responsive, accessible, multi-language
-- **Developer Experience**: TypeScript, testing, Docker support
+- **Developer Experience**: TypeScript, testing, modern tooling
 - **Scalability**: Well-organized, extensible design
 
 โปรเจคนี้เหมาะสำหรับใช้เป็น reference สำหรับการพัฒนา React applications ขนาดกลาง และสามารถขยายความสามารถได้ง่ายในอนาคต

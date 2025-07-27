@@ -85,6 +85,6 @@ echo ""
 echo "📚 Documentation:"
 echo "- README.md - Project overview"
 echo "- docs/TESTING.md - Testing guide"
-echo "- docs/DOCKER.md - Docker guide"
+# Docker guide removed
 echo ""
 echo "Happy coding! 🚀"

@@ -21,8 +21,7 @@
     "analyze": "node scripts/build/analyze-bundle.js",
     "perf:build": "npm run build:analyze",
     "perf:dev": "vite --mode development --profile",
-    "docker:build": "./scripts/docker/docker-build.sh",
-    "docker:dev": "./scripts/docker/docker-dev.sh",
+
     "setup": "./scripts/dev/setup.sh",
     "clean": "./scripts/dev/clean.sh",
     "test:ci": "./scripts/test/test-ci.sh"

@@ -66,10 +66,10 @@ npm run analyze      # Analyze bundle size
 npm run perf:build   # Performance build analysis
 ```
 
-### Docker
+### Development
 ```bash
-npm run docker:dev   # Start development container
-npm run docker:build # Build production image
+npm run dev    # Start development server
+npm run build  # Build for production
 ```
 
 ## 🛠️ Project Structure
@@ -79,11 +79,11 @@ modern-pokedex/
 ├── config/          # Configuration files
 │   ├── build/       # Build configs (Vite, Tailwind)
 │   ├── lint/        # Linting configs (ESLint, Prettier)
-│   ├── docker/      # Docker configs
+
 │   └── test/        # Test configs (Playwright)
 ├── scripts/         # Utility scripts
 │   ├── build/       # Build scripts
-│   ├── docker/      # Docker scripts
+
 │   ├── test/        # Test scripts
 │   └── dev/         # Development scripts
 ├── src/             # Source code
@@ -108,7 +108,7 @@ modern-pokedex/
 - **Testing**: Vitest for unit tests, Playwright for E2E
 - **Performance**: Bundle analysis and optimization
 - **Internationalization**: Multi-language support
-- **Docker**: Containerized development and deployment
+
 - **CI/CD**: Automated testing and deployment scripts
 
 ## 🔧 Development Workflow
@@ -177,7 +177,7 @@ npm run test:run -- --reporter=verbose  # Verbose test output
 - **Read documentation**: Check `docs/` folder
 - **Run tests**: Understand the test suite
 - **Customize**: Modify components and styles
-- **Deploy**: Use Docker or build for your platform
+- **Deploy**: Build for your platform
 
 ## 🤝 Contributing
 

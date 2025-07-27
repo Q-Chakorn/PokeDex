@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Modern Pokédex is a React-based single-page application built with TypeScript, featuring a responsive design system, internationalization support, and theme switching capabilities. The application will use the PokéAPI (https://pokeapi.co/) as the primary data source, with a service layer abstraction to enable future backend integration. The frontend will be containerized using Docker and optimized for performance with modern build tools.
+The Modern Pokédex is a React-based single-page application built with TypeScript, featuring a responsive design system, internationalization support, and theme switching capabilities. The application will use the PokéAPI (https://pokeapi.co/) as the primary data source, with a service layer abstraction to enable future backend integration. The frontend is optimized for performance with modern build tools and deployment-ready static builds.
 
 ## Architecture
 
@@ -38,7 +38,7 @@ graph TB
 - **State Management**: React Context API with useReducer for complex state
 - **Internationalization**: react-i18next for EN/TH language support
 - **Data Loading**: Native fetch API for future backend integration
-- **Containerization**: Docker with multi-stage builds
+- **Build System**: Vite with optimized production builds
 - **Development**: ESLint, Prettier, and Husky for code quality
 
 ## Components and Interfaces
@@ -252,21 +252,21 @@ React Error Boundaries will catch JavaScript errors in component trees and displ
 - Smooth transitions between themes
 - Consistent theming across all components
 
-## Docker Configuration
+## Build Configuration
 
-### Multi-stage Build
-1. **Build Stage**: Node.js environment for building the React application
-2. **Production Stage**: Nginx for serving static files
+### Modern Build System
+1. **Development**: Vite dev server with hot reload
+2. **Production**: Optimized static build
 
 ### Optimization Features
-- Minimal base image (nginx:alpine)
-- Gzipped static assets
-- Proper caching headers
-- Health check endpoint
-- Configurable port binding
-- Environment variable support for API endpoints
+- Fast development with Vite
+- Optimized production bundles
+- Code splitting and tree shaking
+- Asset optimization
+- Modern JavaScript features
+- Environment variable support for configuration
 
 ### Development vs Production
 - Development: Hot reload with Vite dev server
-- Production: Optimized static build served by Nginx
-- Docker Compose for local development with volume mounting
+- Production: Optimized static build for deployment
+- Modern tooling for fast development experience

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This feature involves creating a modern, responsive Pokédex web application that provides an intuitive interface for browsing and viewing Pokémon information. The application will support multiple languages (English and Thai), theme switching (dark/light modes), and be containerized with Docker. The initial implementation will be frontend-only using static data or public APIs, with architecture designed to easily integrate with a custom backend in the future.
+This feature involves creating a modern, responsive Pokédex web application that provides an intuitive interface for browsing and viewing Pokémon information. The application will support multiple languages (English and Thai), theme switching (dark/light modes), and modern deployment options. The initial implementation will be frontend-only using static data or public APIs, with architecture designed to easily integrate with a custom backend in the future.
 
 ## Requirements
 
@@ -65,14 +65,14 @@ This feature involves creating a modern, responsive Pokédex web application tha
 
 ### Requirement 6
 
-**User Story:** As a developer or system administrator, I want the application to be containerized with Docker, so that it can be easily deployed and run in different environments.
+**User Story:** ~~As a developer or system administrator, I want the application to be containerized with Docker, so that it can be easily deployed and run in different environments.~~ (REMOVED)
 
-#### Acceptance Criteria
+#### Acceptance Criteria (REMOVED)
 
-1. WHEN building the application THEN the system SHALL include a Dockerfile that creates a production-ready container
-2. WHEN running the Docker container THEN the system SHALL serve the application on a configurable port (default 3000)
-3. WHEN the container starts THEN the system SHALL be accessible via web browser without additional configuration
-4. WHEN building the Docker image THEN the system SHALL optimize for small image size and fast startup time
+1. ~~WHEN building the application THEN the system SHALL include a Dockerfile that creates a production-ready container~~ (REMOVED)
+2. ~~WHEN running the Docker container THEN the system SHALL serve the application on a configurable port (default 3000)~~ (REMOVED)
+3. ~~WHEN the container starts THEN the system SHALL be accessible via web browser without additional configuration~~ (REMOVED)
+4. ~~WHEN building the Docker image THEN the system SHALL optimize for small image size and fast startup time~~ (REMOVED)
 
 ### Requirement 7
 
