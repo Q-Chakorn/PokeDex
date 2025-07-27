@@ -4,6 +4,7 @@ import { SimpleAppLayout } from '../components/layout/SimpleAppLayout';
 import HomePage from '../pages/HomePage';
 import AboutPage from '../pages/AboutPage';
 import SimplePokemonListPage from '../pages/SimplePokemonListPage';
+import PokemonDetailPage from '../pages/PokemonDetailPage';
 
 export const AppRouter: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ export const AppRouter: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/list" element={<SimplePokemonListPage />} />
+          <Route path="/pokemon/:dexNumber" element={<PokemonDetailPage />} />
           <Route path="/about" element={<AboutPage />} />
         </Routes>
       </SimpleAppLayout>

@@ -1,9 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePokemon } from '../contexts/SimplePokemonContext';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { EnhancedSearchBar } from '../components/ui/EnhancedSearchBar';
+import { PokemonImage } from '../components/ui/PokemonImage';
 
 const HomePage: React.FC = () => {
+  const navigate = useNavigate();
   const {
     filteredPokemon,
     availableTypes,
@@ -20,6 +23,12 @@ const HomePage: React.FC = () => {
     setViewMode,
     clearFilters
   } = usePokemon();
+
+  const handlePokemonClick = (pokemon: any) => {
+    // Extract number from dexNumber (e.g., "#0001" -> "1")
+    const dexNum = pokemon.dexNumber.replace('#', '').replace(/^0+/, '');
+    navigate(`/pokemon/${dexNum}`);
+  };
 
   // Pagination
   const totalPages = Math.ceil(filteredPokemon.length / itemsPerPage);
@@ -242,7 +251,11 @@ const HomePage: React.FC = () => {
         {/* Pokemon Grid */}
         <div className={`pokemon-grid ${viewMode === 'grid' ? 'grid-view' : 'list-view'}`}>
           {currentPagePokemon.map((pokemon) => (
-            <div key={pokemon.id} className="pokemon-card">
+            <div 
+              key={pokemon.id} 
+              className="pokemon-card"
+              onClick={() => handlePokemonClick(pokemon)}
+            >
               {/* Legendary Badge */}
               {pokemon.isLegendary && (
                 <div className="pokemon-legendary-badge">
@@ -256,32 +269,16 @@ const HomePage: React.FC = () => {
               </div>
 
               {/* Pokemon Avatar */}
-              <div 
+              <PokemonImage
+                dexNumber={pokemon.dexNumber}
+                name={pokemon.name}
+                primaryType={pokemon.types[0]?.name}
+                size="medium"
                 className="pokemon-avatar"
                 style={{
-                  background: `linear-gradient(135deg, ${pokemon.types[0]?.color || '#68A090'} 0%, ${pokemon.types[1]?.color || pokemon.types[0]?.color || '#68A090'} 100%)`
+                  margin: '0 auto 1.25rem'
                 }}
-              >
-                {pokemon.types[0]?.name === 'Fire' && '🔥'}
-                {pokemon.types[0]?.name === 'Water' && '💧'}
-                {pokemon.types[0]?.name === 'Grass' && '🌿'}
-                {pokemon.types[0]?.name === 'Electric' && '⚡'}
-                {pokemon.types[0]?.name === 'Psychic' && '🔮'}
-                {pokemon.types[0]?.name === 'Bug' && '🐛'}
-                {pokemon.types[0]?.name === 'Normal' && '⭐'}
-                {pokemon.types[0]?.name === 'Poison' && '☠️'}
-                {pokemon.types[0]?.name === 'Flying' && '🦅'}
-                {pokemon.types[0]?.name === 'Rock' && '🪨'}
-                {pokemon.types[0]?.name === 'Ground' && '🌍'}
-                {pokemon.types[0]?.name === 'Fighting' && '👊'}
-                {pokemon.types[0]?.name === 'Ghost' && '👻'}
-                {pokemon.types[0]?.name === 'Steel' && '⚔️'}
-                {pokemon.types[0]?.name === 'Ice' && '❄️'}
-                {pokemon.types[0]?.name === 'Dragon' && '🐉'}
-                {pokemon.types[0]?.name === 'Dark' && '🌙'}
-                {pokemon.types[0]?.name === 'Fairy' && '🧚'}
-                {!['Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Bug', 'Normal', 'Poison', 'Flying', 'Rock', 'Ground', 'Fighting', 'Ghost', 'Steel', 'Ice', 'Dragon', 'Dark', 'Fairy'].includes(pokemon.types[0]?.name) && '❓'}
-              </div>
+              />
 
               {/* Pokemon Info Container (for list view) */}
               <div className="pokemon-info">

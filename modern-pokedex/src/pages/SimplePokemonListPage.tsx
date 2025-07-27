@@ -1,9 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usePokemon } from '../contexts/SimplePokemonContext';
 import { LoadingSpinner } from '../components/ui/LoadingSpinner';
 import { EnhancedSearchBar } from '../components/ui/EnhancedSearchBar';
+import { PokemonImage } from '../components/ui/PokemonImage';
 
 const SimplePokemonListPage: React.FC = () => {
+  const navigate = useNavigate();
   const {
     filteredPokemon,
     availableTypes,
@@ -20,6 +23,12 @@ const SimplePokemonListPage: React.FC = () => {
     setViewMode,
     clearFilters
   } = usePokemon();
+
+  const handlePokemonClick = (pokemon: any) => {
+    // Extract number from dexNumber (e.g., "#0001" -> "1")
+    const dexNum = pokemon.dexNumber.replace('#', '').replace(/^0+/, '');
+    navigate(`/pokemon/${dexNum}`);
+  };
 
   // Pagination
   const totalPages = Math.ceil(filteredPokemon.length / itemsPerPage);
@@ -178,6 +187,7 @@ const SimplePokemonListPage: React.FC = () => {
             <div 
               key={pokemon.id} 
               className="group relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 border border-white/20 dark:border-gray-700/20 overflow-hidden cursor-pointer"
+              onClick={() => handlePokemonClick(pokemon)}
             >
               {/* Background Gradient */}
               <div 
@@ -193,20 +203,18 @@ const SimplePokemonListPage: React.FC = () => {
                   {pokemon.dexNumber}
                 </div>
 
-                {/* Pokemon Image Placeholder */}
-                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                  <div className="text-3xl">
-                    {pokemon.types[0]?.name === 'Fire' && '🔥'}
-                    {pokemon.types[0]?.name === 'Water' && '💧'}
-                    {pokemon.types[0]?.name === 'Grass' && '🌿'}
-                    {pokemon.types[0]?.name === 'Electric' && '⚡'}
-                    {pokemon.types[0]?.name === 'Psychic' && '🔮'}
-                    {pokemon.types[0]?.name === 'Bug' && '🐛'}
-                    {pokemon.types[0]?.name === 'Normal' && '⭐'}
-                    {pokemon.types[0]?.name === 'Poison' && '☠️'}
-                    {pokemon.types[0]?.name === 'Flying' && '🦅'}
-                    {!['Fire', 'Water', 'Grass', 'Electric', 'Psychic', 'Bug', 'Normal', 'Poison', 'Flying'].includes(pokemon.types[0]?.name) && '❓'}
-                  </div>
+                {/* Pokemon Image */}
+                <div className="mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <PokemonImage
+                    dexNumber={pokemon.dexNumber}
+                    name={pokemon.name}
+                    primaryType={pokemon.types[0]?.name}
+                    size="small"
+                    style={{
+                      width: '100px',
+                      height: '100px'
+                    }}
+                  />
                 </div>
                 
                 {/* Pokemon Name */}

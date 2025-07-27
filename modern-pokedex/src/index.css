@@ -934,8 +934,8 @@ html.dark .apple-search-input:focus {
 }
 
 .pokemon-grid.list-view .pokemon-avatar {
-  width: 72px;
-  height: 72px;
+  width: 100px;
+  height: 100px;
   margin: 0;
   flex-shrink: 0;
   font-size: 28px;
@@ -1020,22 +1020,14 @@ html.dark .apple-search-input:focus {
 }
 
 .pokemon-avatar {
-  width: 88px;
-  height: 88px;
+  width: 120px;
+  height: 120px;
   margin: 0 auto 1.25rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36px;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: relative;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  /* Remove all styling - just size and margin */
 }
 
 .pokemon-card:hover .pokemon-avatar {
   transform: scale(1.08);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
 }
 
 .pokemon-name {
@@ -1170,6 +1162,15 @@ html.dark .apple-search-input:focus {
   }
   50% {
     opacity: 0.8;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 
@@ -1365,8 +1366,8 @@ html.dark .apple-search-input:focus {
   }
   
   .pokemon-avatar {
-    width: 72px;
-    height: 72px;
+    width: 100px;
+    height: 100px;
     font-size: 28px;
   }
   
@@ -1401,8 +1402,8 @@ html.dark .apple-search-input:focus {
   }
   
   .pokemon-grid.list-view .pokemon-avatar {
-    width: 64px;
-    height: 64px;
+    width: 80px;
+    height: 80px;
     font-size: 24px;
     margin: 0 auto;
   }
@@ -1450,8 +1451,8 @@ html.dark .apple-search-input:focus {
   }
   
   .pokemon-grid.list-view .pokemon-avatar {
-    width: 68px;
-    height: 68px;
+    width: 90px;
+    height: 90px;
     font-size: 26px;
   }
   
