@@ -1,11 +1,23 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { PokemonService } from '../PokemonService';
+import { apiService } from '../ApiService';
 import type { Pokemon, PokemonType } from '../../types/pokemon';
 
-// Mock the dataset
-vi.mock('../../assets/pokemon_kanto_dataset.json', () => ({
-  default: [
-    {
+// Mock the API service
+vi.mock('../ApiService', () => ({
+  apiService: {
+    getAllPokemon: vi.fn(),
+    getPokemonById: vi.fn(),
+    getPokemonByName: vi.fn(),
+    searchPokemon: vi.fn(),
+    getAvailableTypes: vi.fn(),
+    getLegendaryPokemon: vi.fn(),
+    getStatsSummary: vi.fn(),
+  }
+}));
+
+const mockPokemonData = [
+  {
       dex_number: "#0001",
       name: "Bulbasaur",
       type_01: "Grass",
@@ -13,8 +25,6 @@ vi.mock('../../assets/pokemon_kanto_dataset.json', () => ({
       ability_01: "Overgrow",
       ability_02: "",
       hidden_ability: "Chlorophyll",
-      egg_group_01: "Monster",
-      egg_group_02: " Grass",
       is_legendary: "False",
       bio: "Bulbasaur is a dual-type Grass/Poison Pokémon.",
       hp: "45",
@@ -32,8 +42,6 @@ vi.mock('../../assets/pokemon_kanto_dataset.json', () => ({
       ability_01: "Static",
       ability_02: "",
       hidden_ability: "Lightning Rod",
-      egg_group_01: "Field",
-      egg_group_02: " Fairy",
       is_legendary: "False",
       bio: "Pikachu is an Electric-type Pokémon.",
       hp: "35",
@@ -51,8 +59,6 @@ vi.mock('../../assets/pokemon_kanto_dataset.json', () => ({
       ability_01: "Pressure",
       ability_02: "",
       hidden_ability: "Unnerve",
-      egg_group_01: "Undiscovered",
-      egg_group_02: "",
       is_legendary: "True",
       bio: "Mewtwo is a legendary Psychic-type Pokémon.",
       hp: "106",
@@ -62,20 +68,44 @@ vi.mock('../../assets/pokemon_kanto_dataset.json', () => ({
       sp_defense: "90",
       speed: "130"
     }
-  ]
-}));
+  ];
 
 describe('PokemonService', () => {
   let service: PokemonService;
+  const mockApiService = apiService as any;
 
   beforeEach(() => {
     service = new PokemonService();
     service.reset();
+    vi.clearAllMocks();
+    
+    // Setup default mock responses
+    mockApiService.getAllPokemon.mockResolvedValue({ data: mockPokemonData });
+    mockApiService.getPokemonById.mockImplementation((id: number) => {
+      const pokemon = mockPokemonData.find(p => parseInt(p.dex_number.replace('#', '').replace(/^0+/, '')) === id);
+      return Promise.resolve(pokemon ? { data: pokemon } : { error: 'Not found' });
+    });
+    mockApiService.getPokemonByName.mockImplementation((name: string) => {
+      const pokemon = mockPokemonData.find(p => p.name.toLowerCase() === name.toLowerCase());
+      return Promise.resolve(pokemon ? { data: pokemon } : { error: 'Not found' });
+    });
+    mockApiService.searchPokemon.mockResolvedValue({ data: mockPokemonData });
+    mockApiService.getAvailableTypes.mockResolvedValue({ data: ['Grass', 'Poison', 'Electric', 'Psychic'] });
+    mockApiService.getLegendaryPokemon.mockResolvedValue({ 
+      data: mockPokemonData.filter(p => p.is_legendary === 'True') 
+    });
+    mockApiService.getStatsSummary.mockResolvedValue({
+      data: {
+        totalPokemon: 3,
+        legendaryCount: 1,
+        typeDistribution: { Grass: 1, Poison: 1, Electric: 1, Psychic: 1 }
+      }
+    });
   });
 
-  describe('loadPokemonData', () => {
+  describe('loadPokemon', () => {
     it('should load and transform Pokemon data', async () => {
-      const pokemon = await service.loadPokemonData();
+      const pokemon = await service.loadPokemon();
       
       expect(pokemon).toHaveLength(3);
       expect(pokemon[0]).toMatchObject({
@@ -84,15 +114,16 @@ describe('PokemonService', () => {
         isLegendary: false
       });
       expect(pokemon[0].types).toHaveLength(2);
-      expect(pokemon[0].types[0].name).toBe('grass');
-      expect(pokemon[0].types[1].name).toBe('poison');
+      expect(pokemon[0].types[0].name).toBe('Grass');
+      expect(pokemon[0].types[1].name).toBe('Poison');
     });
 
     it('should return cached data on subsequent calls', async () => {
-      const firstCall = await service.loadPokemonData();
-      const secondCall = await service.loadPokemonData();
+      const firstCall = await service.loadPokemon();
+      const secondCall = await service.loadPokemon();
       
       expect(firstCall).toBe(secondCall);
+      expect(mockApiService.getAllPokemon).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -112,12 +143,14 @@ describe('PokemonService', () => {
       expect(pokemon).not.toBeNull();
       expect(pokemon?.name).toBe('Pikachu');
       expect(pokemon?.id).toBe(25);
+      expect(mockApiService.getPokemonById).toHaveBeenCalledWith(25);
     });
 
     it('should return null for non-existent ID', async () => {
       const pokemon = await service.getPokemonById(999);
       
       expect(pokemon).toBeNull();
+      expect(mockApiService.getPokemonById).toHaveBeenCalledWith(999);
     });
   });
 
@@ -127,6 +160,7 @@ describe('PokemonService', () => {
       
       expect(pokemon).not.toBeNull();
       expect(pokemon?.name).toBe('Pikachu');
+      expect(mockApiService.getPokemonByName).toHaveBeenCalledWith('pikachu');
     });
 
     it('should return Pokemon by exact name', async () => {
@@ -134,12 +168,14 @@ describe('PokemonService', () => {
       
       expect(pokemon).not.toBeNull();
       expect(pokemon?.name).toBe('Bulbasaur');
+      expect(mockApiService.getPokemonByName).toHaveBeenCalledWith('Bulbasaur');
     });
 
     it('should return null for non-existent name', async () => {
       const pokemon = await service.getPokemonByName('NonExistent');
       
       expect(pokemon).toBeNull();
+      expect(mockApiService.getPokemonByName).toHaveBeenCalledWith('NonExistent');
     });
   });
 
@@ -148,78 +184,55 @@ describe('PokemonService', () => {
       const pokemon = await service.searchPokemon();
       
       expect(pokemon).toHaveLength(3);
+      expect(mockApiService.searchPokemon).toHaveBeenCalledWith({});
     });
 
     it('should filter by name query', async () => {
+      mockApiService.searchPokemon.mockResolvedValue({ 
+        data: mockPokemonData.filter(p => p.name.toLowerCase().includes('pika')) 
+      });
+      
       const pokemon = await service.searchPokemon({ query: 'pika' });
       
       expect(pokemon).toHaveLength(1);
       expect(pokemon[0].name).toBe('Pikachu');
+      expect(mockApiService.searchPokemon).toHaveBeenCalledWith({ query: 'pika' });
     });
 
-    it('should filter by dex number query', async () => {
-      const pokemon = await service.searchPokemon({ query: '#0001' });
+    it('should filter by type', async () => {
+      mockApiService.searchPokemon.mockResolvedValue({ 
+        data: mockPokemonData.filter(p => p.type_01 === 'Electric') 
+      });
       
-      expect(pokemon).toHaveLength(1);
-      expect(pokemon[0].name).toBe('Bulbasaur');
-    });
-
-    it('should filter by ID query', async () => {
-      const pokemon = await service.searchPokemon({ query: '150' });
-      
-      expect(pokemon).toHaveLength(1);
-      expect(pokemon[0].name).toBe('Mewtwo');
-    });
-
-    it('should filter by single type', async () => {
       const pokemon = await service.searchPokemon({ 
-        types: [{ name: 'electric', color: '#F8D030' }] 
+        types: [{ name: 'Electric', color: '#F8D030' }] 
       });
       
       expect(pokemon).toHaveLength(1);
       expect(pokemon[0].name).toBe('Pikachu');
+      expect(mockApiService.searchPokemon).toHaveBeenCalledWith({ type: 'Electric' });
     });
 
-    it('should filter by multiple types', async () => {
-      const pokemon = await service.searchPokemon({ 
-        types: [
-          { name: 'grass', color: '#78C850' },
-          { name: 'electric', color: '#F8D030' }
-        ] 
+    it('should filter by legendary status', async () => {
+      mockApiService.searchPokemon.mockResolvedValue({ 
+        data: mockPokemonData.filter(p => p.is_legendary === 'True') 
       });
       
-      expect(pokemon).toHaveLength(2);
-      expect(pokemon.map(p => p.name)).toEqual(['Bulbasaur', 'Pikachu']);
-    });
-
-    it('should filter by legendary status (true)', async () => {
       const pokemon = await service.searchPokemon({ isLegendary: true });
       
       expect(pokemon).toHaveLength(1);
       expect(pokemon[0].name).toBe('Mewtwo');
-    });
-
-    it('should filter by legendary status (false)', async () => {
-      const pokemon = await service.searchPokemon({ isLegendary: false });
-      
-      expect(pokemon).toHaveLength(2);
-      expect(pokemon.map(p => p.name)).toEqual(['Bulbasaur', 'Pikachu']);
-    });
-
-    it('should combine multiple filters', async () => {
-      const pokemon = await service.searchPokemon({ 
-        query: 'u',
-        isLegendary: false 
-      });
-      
-      expect(pokemon).toHaveLength(2);
-      expect(pokemon.map(p => p.name)).toEqual(['Bulbasaur', 'Pikachu']);
+      expect(mockApiService.searchPokemon).toHaveBeenCalledWith({ legendary: true });
     });
   });
 
   describe('getPokemonByType', () => {
     it('should return Pokemon of specific type', async () => {
-      const pokemon = await service.getPokemonByType({ name: 'grass', color: '#78C850' });
+      mockApiService.searchPokemon.mockResolvedValue({ 
+        data: mockPokemonData.filter(p => p.type_01 === 'Grass' || p.type_02 === 'Grass') 
+      });
+      
+      const pokemon = await service.getPokemonByType({ name: 'Grass', color: '#78C850' });
       
       expect(pokemon).toHaveLength(1);
       expect(pokemon[0].name).toBe('Bulbasaur');
@@ -233,6 +246,7 @@ describe('PokemonService', () => {
       expect(pokemon).toHaveLength(1);
       expect(pokemon[0].name).toBe('Mewtwo');
       expect(pokemon[0].isLegendary).toBe(true);
+      expect(mockApiService.getLegendaryPokemon).toHaveBeenCalled();
     });
   });
 
@@ -241,15 +255,17 @@ describe('PokemonService', () => {
       const count = await service.getPokemonCount();
       
       expect(count).toBe(3);
+      expect(mockApiService.getStatsSummary).toHaveBeenCalled();
     });
   });
 
-  describe('getAllTypes', () => {
+  describe('getAvailableTypes', () => {
     it('should return all unique types sorted', async () => {
-      const types = await service.getAllTypes();
+      const types = await service.getAvailableTypes();
       
       expect(types).toHaveLength(4);
-      expect(types.map(t => t.name)).toEqual(['electric', 'grass', 'poison', 'psychic']);
+      expect(types.map(t => t.name)).toEqual(['Electric', 'Grass', 'Poison', 'Psychic']);
+      expect(mockApiService.getAvailableTypes).toHaveBeenCalled();
     });
   });
 
@@ -261,26 +277,28 @@ describe('PokemonService', () => {
         totalPokemon: 3,
         legendaryCount: 1,
         typeDistribution: {
-          grass: 1,
-          poison: 1,
-          electric: 1,
-          psychic: 1
+          Grass: 1,
+          Poison: 1,
+          Electric: 1,
+          Psychic: 1
         }
       });
+      expect(mockApiService.getStatsSummary).toHaveBeenCalled();
     });
   });
 
   describe('error handling', () => {
-    it('should handle data loading errors', async () => {
-      // Mock a service that throws an error
-      const errorService = new PokemonService();
+    it('should handle API errors gracefully', async () => {
+      mockApiService.getAllPokemon.mockResolvedValue({ error: 'Network error' });
       
-      // Override the loadPokemonData method to throw an error
-      vi.spyOn(errorService as any, 'loadPokemonData').mockImplementation(() => {
-        throw new Error('Network error');
-      });
+      await expect(service.loadPokemon()).rejects.toThrow('Network error');
+    });
 
-      await expect(errorService.getAllPokemon()).rejects.toThrow();
+    it('should return empty array on search error', async () => {
+      mockApiService.searchPokemon.mockResolvedValue({ error: 'Search failed' });
+      
+      const result = await service.searchPokemon({ query: 'test' });
+      expect(result).toEqual([]);
     });
   });
 

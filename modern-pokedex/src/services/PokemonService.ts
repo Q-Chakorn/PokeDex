@@ -1,4 +1,4 @@
-import pokemonDataset from '../assets/data/pokemon_kanto_dataset.json';
+import { apiService, PokemonRawData } from './ApiService';
 
 export interface Pokemon {
     id: number;
@@ -24,23 +24,7 @@ export interface PokemonType {
     color: string;
 }
 
-interface PokemonRawData {
-    dex_number: string;
-    name: string;
-    type_01: string;
-    type_02: string;
-    ability_01: string;
-    ability_02: string;
-    hidden_ability: string;
-    is_legendary: string;
-    bio: string;
-    hp: string;
-    attack: string;
-    defense: string;
-    sp_attack: string;
-    sp_defense: string;
-    speed: string;
-}
+// PokemonRawData is now imported from ApiService
 
 export interface SearchFilters {
     query?: string;
@@ -121,7 +105,7 @@ export class PokemonService {
     }
 
     /**
-     * Load and process Pokemon data from the dataset
+     * Load and process Pokemon data from the API
      */
     async loadPokemon(): Promise<Pokemon[]> {
         try {
@@ -129,8 +113,13 @@ export class PokemonService {
                 return this.pokemonData;
             }
 
+            const response = await apiService.getAllPokemon();
+            if (response.error || !response.data) {
+                throw new Error(response.error || 'Failed to fetch Pokemon data');
+            }
+
             // Transform raw data to application format
-            this.pokemonData = (pokemonDataset as PokemonRawData[])
+            this.pokemonData = response.data
                 .map(raw => this.transformRawData(raw))
                 .sort((a, b) => a.id - b.id);
             
@@ -138,7 +127,7 @@ export class PokemonService {
             return this.pokemonData;
         } catch (error) {
             const serviceError: PokemonServiceError = {
-                message: 'Failed to load Pokemon data',
+                message: 'Failed to load Pokemon data from API',
                 code: 'LOAD_ERROR'
             };
             throw serviceError;
@@ -159,66 +148,66 @@ export class PokemonService {
      * Get Pokemon by ID
      */
     async getPokemonById(id: number): Promise<Pokemon | null> {
-        if (!this.isLoaded) {
-            await this.loadPokemonData();
+        try {
+            const response = await apiService.getPokemonById(id);
+            if (response.error || !response.data) {
+                return null;
+            }
+            return this.transformRawData(response.data);
+        } catch (error) {
+            console.error('Error fetching Pokemon by ID:', error);
+            return null;
         }
-
-        const pokemon = this.pokemonData.find(p => p.id === id);
-        return pokemon || null;
     }
 
     /**
      * Get Pokemon by name (case-insensitive)
      */
     async getPokemonByName(name: string): Promise<Pokemon | null> {
-        if (!this.isLoaded) {
-            await this.loadPokemonData();
+        try {
+            const response = await apiService.getPokemonByName(name);
+            if (response.error || !response.data) {
+                return null;
+            }
+            return this.transformRawData(response.data);
+        } catch (error) {
+            console.error('Error fetching Pokemon by name:', error);
+            return null;
         }
-
-        const pokemon = this.pokemonData.find(
-            p => p.name.toLowerCase() === name.toLowerCase()
-        );
-        return pokemon || null;
     }
 
     /**
      * Search Pokemon with filters
      */
     async searchPokemon(filters: SearchFilters = {}): Promise<Pokemon[]> {
-        if (!this.isLoaded) {
-            await this.loadPokemonData();
+        try {
+            const searchParams: any = {};
+            
+            if (filters.query) {
+                searchParams.query = filters.query;
+            }
+            
+            if (filters.types && filters.types.length > 0) {
+                // For API, we'll use the first type for now
+                searchParams.type = filters.types[0].name;
+            }
+            
+            if (filters.isLegendary !== undefined) {
+                searchParams.legendary = filters.isLegendary;
+            }
+
+            const response = await apiService.searchPokemon(searchParams);
+            if (response.error || !response.data) {
+                throw new Error(response.error || 'Failed to search Pokemon');
+            }
+
+            return response.data
+                .map(raw => this.transformRawData(raw))
+                .sort((a, b) => a.id - b.id);
+        } catch (error) {
+            console.error('Error searching Pokemon:', error);
+            return [];
         }
-
-        let filteredPokemon = [...this.pokemonData];
-
-        // Filter by search query (name or dex number)
-        if (filters.query) {
-            const query = filters.query.toLowerCase().trim();
-            filteredPokemon = filteredPokemon.filter(pokemon => {
-                const nameMatch = pokemon.name.toLowerCase().includes(query);
-                const dexMatch = pokemon.dexNumber.toLowerCase().includes(query);
-                const idMatch = pokemon.id.toString().includes(query);
-                return nameMatch || dexMatch || idMatch;
-            });
-        }
-
-        // Filter by types
-        if (filters.types && filters.types.length > 0) {
-            filteredPokemon = filteredPokemon.filter(pokemon =>
-                filters.types!.some(filterType =>
-                    pokemon.types.some(pokemonType => pokemonType.name === filterType.name)
-                )
-            );
-        }
-
-        // Filter by legendary status
-        if (filters.isLegendary !== undefined) {
-            filteredPokemon = filteredPokemon.filter(
-                pokemon => pokemon.isLegendary === filters.isLegendary
-            );
-        }
-
-        return filteredPokemon;
     }
 
     /**
@@ -232,37 +221,58 @@ export class PokemonService {
      * Get legendary Pokemon
      */
     async getLegendaryPokemon(): Promise<Pokemon[]> {
-        return this.searchPokemon({ isLegendary: true });
+        try {
+            const response = await apiService.getLegendaryPokemon();
+            if (response.error || !response.data) {
+                throw new Error(response.error || 'Failed to fetch legendary Pokemon');
+            }
+
+            return response.data
+                .map(raw => this.transformRawData(raw))
+                .sort((a, b) => a.id - b.id);
+        } catch (error) {
+            console.error('Error fetching legendary Pokemon:', error);
+            return [];
+        }
     }
 
     /**
      * Get Pokemon count
      */
     async getPokemonCount(): Promise<number> {
-        if (!this.isLoaded) {
-            await this.loadPokemonData();
+        try {
+            const response = await apiService.getStatsSummary();
+            if (response.error || !response.data) {
+                return 0;
+            }
+            return response.data.totalPokemon;
+        } catch (error) {
+            console.error('Error fetching Pokemon count:', error);
+            return 0;
         }
-        return this.pokemonData.length;
     }
 
     /**
      * Get all unique types
      */
     async getAvailableTypes(): Promise<PokemonType[]> {
-        if (!this.isLoaded) {
-            await this.loadPokemon();
+        try {
+            const response = await apiService.getAvailableTypes();
+            if (response.error || !response.data) {
+                throw new Error(response.error || 'Failed to fetch available types');
+            }
+
+            return response.data
+                .filter(typeName => typeName && typeName.trim())
+                .map(typeName => ({
+                    name: typeName,
+                    color: this.getTypeColor(typeName)
+                }))
+                .sort((a, b) => a.name.localeCompare(b.name));
+        } catch (error) {
+            console.error('Error fetching available types:', error);
+            return [];
         }
-
-        const typesMap = new Map<string, PokemonType>();
-        this.pokemonData.forEach(pokemon => {
-            pokemon.types.forEach(type => {
-                if (!typesMap.has(type.name)) {
-                    typesMap.set(type.name, type);
-                }
-            });
-        });
-
-        return Array.from(typesMap.values()).sort((a, b) => a.name.localeCompare(b.name));
     }
 
     /**
@@ -273,25 +283,20 @@ export class PokemonService {
         legendaryCount: number;
         typeDistribution: Record<string, number>;
     }> {
-        if (!this.isLoaded) {
-            await this.loadPokemon();
+        try {
+            const response = await apiService.getStatsSummary();
+            if (response.error || !response.data) {
+                throw new Error(response.error || 'Failed to fetch stats summary');
+            }
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching stats summary:', error);
+            return {
+                totalPokemon: 0,
+                legendaryCount: 0,
+                typeDistribution: {}
+            };
         }
-
-        const totalPokemon = this.pokemonData.length;
-        const legendaryCount = this.pokemonData.filter(p => p.isLegendary).length;
-
-        const typeDistribution: Record<string, number> = {};
-        this.pokemonData.forEach(pokemon => {
-            pokemon.types.forEach(type => {
-                typeDistribution[type.name] = (typeDistribution[type.name] || 0) + 1;
-            });
-        });
-
-        return {
-            totalPokemon,
-            legendaryCount,
-            typeDistribution
-        };
     }
 
     /**
