@@ -26,7 +26,33 @@ clean: ## Clean build artifacts
 
 import-data: ## Import Pokemon data to MongoDB
 	@echo "Importing Pokemon data..."
-	go run import_data.go
+	go run jsonImport/jsonImport.go
+
+docker-build: ## Build Docker image
+	@echo "Building Docker image..."
+	docker build -t pokedex-backend .
+
+docker-run: ## Run Docker container
+	@echo "Running Docker container..."
+	docker run -p 8080:8080 pokedex-backend
+
+docker-all: docker-build docker-run ## Build and run Docker container
+
+docker-compose-up: ## Start services with docker-compose
+	@echo "Starting services with docker-compose..."
+	docker-compose up -d
+
+docker-compose-down: ## Stop services with docker-compose
+	@echo "Stopping services with docker-compose..."
+	docker-compose down
+
+docker-logs: ## View Docker container logs
+	@echo "Viewing container logs..."
+	docker-compose logs -f pokemon-api
+
+run-all: ## Import data and run API server
+	@echo "Importing data and starting server..."
+	go run jsonImport/jsonImport.go && go run main.go
 
 test-connection: ## Test MongoDB connection
 	@echo "Testing MongoDB connection..."

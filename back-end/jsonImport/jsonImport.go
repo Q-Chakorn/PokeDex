@@ -47,9 +47,21 @@ func ImportJSONToMongo(ctx context.Context, collection *mongo.Collection, jsonFi
 			break
 		}
 	} // ตรวจสอบว่า collection ที่ต้องการมีอยู่ใน database หรือไม่
+
 	if !found {
-		fmt.Printf("Collection '%s' not found\n", collection.Name())
-		return // ถ้า collection ไม่พบ ให้แสดงข้อความและออกจากฟังก์ชัน
+		fmt.Printf("Collection '%s' not found, but proceeding with import (will be created)\n", collection.Name())
+	} else {
+		// ตรวจสอบว่า collection มี document อยู่แล้วหรือไม่
+		count, err := collection.CountDocuments(ctx, struct{}{})
+		if err != nil {
+			log.Fatal("Error counting documents:", err)
+		}
+
+		if count > 0 {
+			fmt.Printf("Collection '%s' already contains %d documents. Skipping import.\n", collection.Name(), count)
+			return // ออกจากฟังก์ชันไม่ต้อง import
+		}
+		fmt.Printf("Collection '%s' is empty. Proceeding with import.\n", collection.Name())
 	}
 
 	file, err := os.Open(jsonFilePath) // เปิดไฟล์ JSON ที่ต้องการนำเข้า
@@ -73,6 +85,6 @@ func ImportJSONToMongo(ctx context.Context, collection *mongo.Collection, jsonFi
 	if err != nil {
 		log.Fatal("Error inserting documents into MongoDB:", err) // ถ้าเกิด error ในการแทรกข้อมูล ให้แสดง log และหยุดโปรแกรม
 	}
-	fmt.Printf("Successfully imported %d documents to pokemons collection\n", len(result.InsertedIDs)) // แสดงจำนวนเอกสารที่นำเข้าสำเร็จ
-	fmt.Println("Inserted documents:", result.InsertedIDs)                                             // แสดง ID ของเอกสารที่ถูกแทรก
+	fmt.Printf("Successfully imported %d documents to %s collection\n", len(result.InsertedIDs), collection.Name()) // แสดงจำนวนเอกสารที่นำเข้าสำเร็จ
+	fmt.Println("Inserted documents:", result.InsertedIDs)                                                          // แสดง ID ของเอกสารที่ถูกแทรก
 }

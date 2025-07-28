@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   modern-pokedex:
-    image: modern-pokedex:1.0.0
+    image: chakorn/modern-pokedex:1.0.0
     ports:
       - "3000:80"
     environment:
