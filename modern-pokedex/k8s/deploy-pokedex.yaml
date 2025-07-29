@@ -20,11 +20,9 @@ spec:
       labels:
         app: modern-pokedex
     spec:
-      nodeSelector: # ส่วนนี้คือการระบุข้อจำกัด
-        kubernetes.io/arch: arm64
       containers:
       - name: modern-pokedex
-        image: chakorn/modern-pokedex:1.0.5
+        image: chakorn/modern-pokedex:1.0.6
         ports:
         - containerPort: 80
         envFrom:
