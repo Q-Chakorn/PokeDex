@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: pokedex-backend
-        image: chakorn/pokedex-backend:1.0.2
+        image: chakorn/pokedex-backend:server1.0.7
         ports:
         - containerPort: 8080
         resources:
