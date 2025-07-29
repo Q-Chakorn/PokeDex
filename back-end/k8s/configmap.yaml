@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pokedex-backend-config
+data:
+  env.yaml: |
+    mongodb:
+      user: admin
+      pass: secret123
+      host: 27.254.134.143
+      port: 32017
+      database: PokeDex
+      collection: kanto_pokemons
