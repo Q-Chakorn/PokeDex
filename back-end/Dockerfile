@@ -1,5 +1,11 @@
 # Multi-stage build for Go application
-FROM golang:1.23.4-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.23.4-alpine AS builder
+
+# Set build arguments for cross-compilation
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
 
 # Install git and ca-certificates (needed for some Go modules)
 RUN apk add --no-cache git ca-certificates
@@ -16,9 +22,11 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build the applications with optimizations
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main main.go
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o jsonImportBin jsonImport/jsonImport.go
+# Build the applications with cross-compilation support
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} \
+    go build -a -installsuffix cgo -ldflags="-w -s" -o main main.go
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH:-amd64} \
+    go build -a -installsuffix cgo -ldflags="-w -s" -o jsonImportBin jsonImport/jsonImport.go
 
 # Final stage - use scratch for minimal image
 FROM alpine:latest

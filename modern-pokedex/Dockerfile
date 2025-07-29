@@ -31,12 +31,37 @@ RUN cat > /docker-entrypoint.sh << 'EOF'
 #!/bin/sh
 set -e
 
-# Default values if not set
-export VITE_API_BASE_URL="${VITE_API_BASE_URL:-http://localhost:8080/api}"
-export VITE_APP_TITLE="${VITE_APP_TITLE:-Modern Pokédex}"
+# Smart detection of environment
+detect_host() {
+    # If VITE_API_BASE_URL is already set, use it
+    if [ -n "$VITE_API_BASE_URL" ]; then
+        echo "$VITE_API_BASE_URL"
+        return
+    fi
+    
+    # If SERVER_HOST is provided, use it
+    if [ -n "$SERVER_HOST" ]; then
+        echo "http://${SERVER_HOST}:${BACKEND_PORT:-30001}/api"
+        return
+    fi
+    
+    # Try to detect if we're in Kubernetes by checking service account
+    if [ -f /var/run/secrets/kubernetes.io/serviceaccount/token ]; then
+        # We're in Kubernetes, try to use the backend service
+        echo "http://pokedex-backend-service:80/api"
+        return
+    fi
+    
+    # Default to localhost
+    echo "http://localhost:30001/api"
+}
+
+# Auto-detect the API URL
+export VITE_API_BASE_URL=$(detect_host)
+export VITE_APP_TITLE="${VITE_APP_TITLE:-Modern Pokédx}"
 export VITE_APP_VERSION="${VITE_APP_VERSION:-1.0.0}"
 
-echo "🚀 Starting Modern Pokédex Frontend..."
+echo "🚀 Starting Modern Pokédx Frontend..."
 echo "API Base URL: $VITE_API_BASE_URL"
 echo "App Title: $VITE_APP_TITLE"
 echo "App Version: $VITE_APP_VERSION"
