@@ -34,17 +34,23 @@ set -e
 # Default values if not set
 export VITE_API_BASE_URL="${VITE_API_BASE_URL:-http://localhost:8080/api}"
 export VITE_APP_TITLE="${VITE_APP_TITLE:-Modern Pokédex}"
-export VITE_APP_VERSION="${VITE_APP_VERSION:-1.0.0}"
+export VITE_APP_VERSION="${VITE_APP_VERSION:-1.0.6}"
 
 echo "🚀 Starting Modern Pokédex Frontend..."
+echo "======================================"
 echo "API Base URL: $VITE_API_BASE_URL"
 echo "App Title: $VITE_APP_TITLE"
 echo "App Version: $VITE_APP_VERSION"
+echo "Environment: ${NODE_ENV:-production}"
+echo "======================================"
 
 # Create runtime config injection script
 cat > /usr/share/nginx/html/runtime-config.js << JSEOF
 window.RUNTIME_CONFIG = {
-  API_BASE_URL: '$VITE_API_BASE_URL'
+  API_BASE_URL: '$VITE_API_BASE_URL',
+  APP_TITLE: '$VITE_APP_TITLE',
+  APP_VERSION: '$VITE_APP_VERSION',
+  NODE_ENV: '${NODE_ENV:-production}'
 };
 JSEOF
 

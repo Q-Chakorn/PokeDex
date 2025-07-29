@@ -1,6 +1,6 @@
 # Pokemon API System 🚀
 
-ระบบ Pokemon API ที่ใช้ Go backend กับ MongoDB และ React frontend
+ระบบ Pokemon API ที่ใช้ Go backend กับ MongoDB และ React frontend รองรับการ deploy แบบ Docker และ Kubernetes
 
 ## 📋 ภาพรวมของระบบ
 
@@ -8,13 +8,69 @@
 - **Framework**: Gin Web Framework
 - **Database**: MongoDB
 - **Features**: REST API endpoints, CORS support, Data import
+- **Docker**: Multi-stage build สำหรับ production
 
 ### Frontend (React)
 - **Framework**: React + TypeScript + Vite
 - **Features**: Pokemon search, filtering, responsive design
 - **API Integration**: ดึงข้อมูลจาก Go API แทนไฟล์ JSON
+- **Docker**: Nginx-based production build
 
-## 🛠️ การติดตั้งและใช้งาน
+## � Quick Start - การ Deploy
+
+### 🏠 Local Development
+
+```bash
+# 1. Build local images
+./build-local.sh
+
+# 2. Run with Docker Compose
+docker-compose up -d
+
+# หรือ Deploy บน local Kubernetes
+./deploy-k8s.sh local
+```
+
+**Access URLs:**
+- Frontend: http://localhost:3000 (Docker) | http://localhost:30000 (K8s)
+- Backend: http://localhost:8080 (Docker) | http://localhost:30001/api (K8s)
+
+### 🌐 Server Deployment (27.254.134.143)
+
+```bash
+# 1. Build และ push images
+./build-images.sh
+
+# 2. Deploy บน server
+./deploy-k8s.sh server
+
+# หรือใช้ Docker Compose บน server
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+**Access URLs:**
+- Frontend: http://27.254.134.143:30000
+- Backend: http://27.254.134.143:30001/api
+
+### 🧹 Cleanup Resources
+
+```bash
+# Clean up Docker resources
+./cleanup.sh docker
+
+# Clean up Kubernetes resources  
+./cleanup.sh k8s
+
+# Clean up everything
+./cleanup.sh all
+```
+
+## 📦 Available Docker Images
+
+- **Backend**: `chakorn/pokedex-backend:1.0.6`
+- **Frontend**: `chakorn/modern-pokedex:1.0.6`
+
+## �🛠️ การติดตั้งและใช้งาน (Manual Setup)
 
 ### วิธีที่ 1: ใช้ Setup Script (แนะนำ)
 
