@@ -26,8 +26,39 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx configuration
 COPY /docker/nginx.conf /etc/nginx/nginx.conf
 
+# Create entrypoint script for runtime env substitution
+RUN cat > /docker-entrypoint.sh << 'EOF'
+#!/bin/sh
+set -e
+
+# Default values if not set
+export VITE_API_BASE_URL="${VITE_API_BASE_URL:-http://localhost:8080/api}"
+export VITE_APP_TITLE="${VITE_APP_TITLE:-Modern Pokédex}"
+export VITE_APP_VERSION="${VITE_APP_VERSION:-1.0.0}"
+
+echo "🚀 Starting Modern Pokédex Frontend..."
+echo "API Base URL: $VITE_API_BASE_URL"
+echo "App Title: $VITE_APP_TITLE"
+echo "App Version: $VITE_APP_VERSION"
+
+# Create runtime config injection script
+cat > /usr/share/nginx/html/runtime-config.js << JSEOF
+window.RUNTIME_CONFIG = {
+  API_BASE_URL: '$VITE_API_BASE_URL'
+};
+JSEOF
+
+# Update index.html to include runtime config
+sed -i 's|<script type="module"|<script src="/runtime-config.js"></script><script type="module"|' /usr/share/nginx/html/index.html
+
+# Start nginx
+exec nginx -g "daemon off;"
+EOF
+
+RUN chmod +x /docker-entrypoint.sh
+
 # Expose port 80
 EXPOSE 80
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Use custom entrypoint
+ENTRYPOINT ["/docker-entrypoint.sh"]

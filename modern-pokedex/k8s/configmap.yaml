@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: modern-pokedex-config
-data:
-  # Add any environment variables or config here
-  NODE_ENV: "production"
-  APP_NAME: "Modern Pokedex"

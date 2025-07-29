@@ -1,5 +1,20 @@
-// API configuration
-const API_BASE_URL = 'http://localhost:8080/api';
+// API configuration with runtime placeholder support  
+const getApiBaseUrl = () => {
+    // Check for runtime replacement from window (injected at runtime)
+    if (typeof window !== 'undefined' && (window as any).RUNTIME_CONFIG?.API_BASE_URL) {
+        return (window as any).RUNTIME_CONFIG.API_BASE_URL;
+    }
+    
+    // Try to get from build-time environment 
+    if (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_API_BASE_URL) {
+        return (import.meta as any).env.VITE_API_BASE_URL;
+    }
+    
+    // Fallback to default for development
+    return 'http://localhost:8080/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 // Raw Pokemon data structure from MongoDB
 export interface PokemonRawData {
