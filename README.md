@@ -1,3 +1,6 @@
+# PokeDex
+- http://27.254.134.143:30000/
+
 # Pokemon API System 🚀
 
 ระบบ Pokemon API ที่ใช้ Go backend กับ MongoDB และ React frontend รองรับการ deploy แบบ Docker และ Kubernetes
