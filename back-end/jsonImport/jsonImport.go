@@ -6,12 +6,11 @@ import (
 	"context"       // นำเข้า context สำหรับจัดการ timeout/cancel ของ process
 	"encoding/json" // นำเข้า json สำหรับการจัดการข้อมูล JSON
 	"fmt"           // นำเข้า fmt สำหรับแสดงผลข้อความ
-	"io/ioutil"     // นำเข้า ioutil สำหรับการอ่านไฟล์
+	"io"            // นำเข้า io สำหรับการอ่านไฟล์
 	"log"           // นำเข้า log สำหรับแสดง log ข้อผิดพลาด
 	"os"            // นำเข้า os สำหรับการจัดการไฟล์และระบบปฏิบัติการ
 
 	"go.mongodb.org/mongo-driver/mongo" // นำเข้า mongo driver สำหรับเชื่อมต่อ MongoDB
-	// นำเข้า time สำหรับใช้งานเกี่ยวกับเวลา
 )
 
 // ประกาศ package ชื่อ main
@@ -28,8 +27,16 @@ func main() {
 		fmt.Println("Connected to MongoDB successfully") // แสดงข้อความเมื่อเชื่อมต่อ MongoDB สำเร็จ
 	}
 	ctx := context.Background() // สร้าง context สำหรับการเรียกใช้งาน
-	// ImportJSONToMongo(ctx, db.Collection.Database().Collection("pokemons"), "jsonImport/kanto/pokemon_kanto_dataset.json") // นำเข้าข้อมูล JSON ไปยัง MongoDB
-	ImportJSONToMongo(ctx, db.Collection, "jsonImport/kanto/pokemon_kanto_dataset.json")
+
+	// Import Kanto dataset to kanto_pokemons collection
+	fmt.Println("🚀 Starting Kanto Pokemon import...")
+	kantoCollection := db.Collection.Database().Collection("kanto_pokemons")
+	ImportJSONToMongo(ctx, kantoCollection, "jsonImport/kanto/pokemon_kanto_dataset.json")
+
+	// Import Johto dataset to johto_pokemons collection
+	fmt.Println("🚀 Starting Johto Pokemon import...")
+	johtoCollection := db.Collection.Database().Collection("johto_pokemons")
+	ImportJSONToMongo(ctx, johtoCollection, "jsonImport/johto/pokemon_johto_dataset.json")
 }
 
 func ImportJSONToMongo(ctx context.Context, collection *mongo.Collection, jsonFilePath string) { // ฟังก์ชันสำหรับนำเข้าข้อมูล JSON documents ไปยัง collection ที่กำหนด
@@ -70,7 +77,7 @@ func ImportJSONToMongo(ctx context.Context, collection *mongo.Collection, jsonFi
 	}
 	defer file.Close() // ปิดไฟล์เมื่อเสร็จสิ้น
 
-	byteValue, err := ioutil.ReadAll(file) // อ่านเนื้อหาทั้งหมดจากไฟล์ JSON ที่เปิดไว้แล้ว และเก็บผลลัพธ์ในรูปแบบ []byte ไว้ในตัวแปร byteValue
+	byteValue, err := io.ReadAll(file) // อ่านเนื้อหาทั้งหมดจากไฟล์ JSON ที่เปิดไว้แล้ว และเก็บผลลัพธ์ในรูปแบบ []byte ไว้ในตัวแปร byteValue
 	if err != nil {
 		log.Fatal("Error reading JSON file:", err) // ถ้าเกิด error ในการอ่านไฟล์ ให้แสดง log และหยุดโปรแกรม
 	}
